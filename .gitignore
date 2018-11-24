@@ -1,0 +1,4 @@
+ca/ca-config.json
+ca/ca-csr.json
+*.pem
+*.csr

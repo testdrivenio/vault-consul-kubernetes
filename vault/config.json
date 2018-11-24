@@ -1,0 +1,19 @@
+{
+  "listener": {
+    "tcp":{
+      "address": "127.0.0.1:8200",
+      "tls_disable": 0,
+      "tls_cert_file": "/etc/tls/vault.pem",
+      "tls_key_file": "/etc/tls/vault-key.pem"
+    }
+  },
+  "storage": {
+    "consul": {
+      "address": "consul:8500",
+      "path": "vault/",
+      "disable_registration": "true",
+      "ha_enabled": "true"
+    }
+  },
+  "ui": true
+}

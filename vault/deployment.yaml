@@ -1,0 +1,68 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: vault
+  labels:
+    app: vault
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: vault
+    spec:
+      containers:
+      - name: vault
+        command: ["vault", "server", "-config", "/vault/config/config.json"]
+        image: "vault:0.11.5"
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          capabilities:
+            add:
+              - IPC_LOCK
+        volumeMounts:
+          - name: configurations
+            mountPath: /vault/config/config.json
+            subPath: config.json
+          - name: vault
+            mountPath: /etc/tls
+      - name: consul-vault-agent
+        image: "consul:1.4.0"
+        env:
+          - name: GOSSIP_ENCRYPTION_KEY
+            valueFrom:
+              secretKeyRef:
+                name: consul
+                key: gossip-encryption-key
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+        args:
+          - "agent"
+          - "-retry-join=consul-0.consul.$(NAMESPACE).svc.cluster.local"
+          - "-retry-join=consul-1.consul.$(NAMESPACE).svc.cluster.local"
+          - "-retry-join=consul-2.consul.$(NAMESPACE).svc.cluster.local"
+          - "-encrypt=$(GOSSIP_ENCRYPTION_KEY)"
+          - "-domain=cluster.local"
+          - "-datacenter=dc1"
+          - "-disable-host-node-id"
+          - "-node=vault-1"
+        volumeMounts:
+            - name: config
+              mountPath: /consul/myconfig
+            - name: tls
+              mountPath: /etc/tls
+      volumes:
+        - name: configurations
+          configMap:
+            name: vault
+        - name: config
+          configMap:
+            name: consul
+        - name: tls
+          secret:
+            secretName: consul
+        - name: vault
+          secret:
+            secretName: vault
