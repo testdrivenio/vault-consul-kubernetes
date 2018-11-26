@@ -55,5 +55,16 @@ kubectl apply -f vault/deployment.yaml
 
 echo "All done! Forwarding port 8200..."
 
-export POD=$(kubectl get pods -o=name | grep vault | sed "s/^.\{4\}//")
+POD=$(kubectl get pods -o=name | grep vault | sed "s/^.\{4\}//")
+
+while true; do
+  STATUS=$(kubectl get pods ${POD} -o jsonpath="{.status.phase}")
+  if [ "$STATUS" == "Running" ]; then
+    break
+  else
+    echo "Pod status is: ${STATUS}"
+    sleep 5
+  fi
+done
+
 kubectl port-forward $POD 8200:8200
