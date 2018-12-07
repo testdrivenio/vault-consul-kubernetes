@@ -44,6 +44,7 @@ spec:
           - "-retry-join=consul-1.consul.$(NAMESPACE).svc.cluster.local"
           - "-retry-join=consul-2.consul.$(NAMESPACE).svc.cluster.local"
           - "-encrypt=$(GOSSIP_ENCRYPTION_KEY)"
+          - "-config-file=/consul/myconfig/config.json"
           - "-domain=cluster.local"
           - "-datacenter=dc1"
           - "-disable-host-node-id"
