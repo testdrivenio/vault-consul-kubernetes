@@ -1,10 +1,13 @@
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: consul
 spec:
   serviceName: consul
   replicas: 3
+  selector:
+    matchLabels:
+      app: consul
   template:
     metadata:
       labels:
