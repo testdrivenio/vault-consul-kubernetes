@@ -21,7 +21,8 @@ Install:
 Start the cluster:
 
 ```sh
-$ minikube start --vm-driver=virtualbox
+$ minikube config set vm-driver hyperkit
+$ minikube start
 $ minikube dashboard
 ```
 
